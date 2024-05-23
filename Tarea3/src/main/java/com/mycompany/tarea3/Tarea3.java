@@ -1,29 +1,137 @@
-/*
- * 
-Objeto: id - nombre - telefono
-treeSet
-HashSet
-LinkedHashSet
-
-Menu:
-Crear 
-Listar
-Borrar
- */
 package com.mycompany.tarea3;
 
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 import java.util.*;
 
-public class Tarea3 {
+public class Tarea3 extends JFrame {
+    private Set<Contacto> treeSet = new TreeSet<>(Comparator.comparingInt(Contacto::getId));
+    private Set<Contacto> hashSet = new HashSet<>();
+    private Set<Contacto> linkedHashSet = new LinkedHashSet<>();
+    private java.util.List<Contacto> arrayList = new ArrayList<>();
 
-    // Métodos:
-    public static void listarContactos(Collection<Contacto> contactos) {
-        for (Contacto contacto : contactos) {
-            System.out.println(contacto);
+    private JTextArea textArea;
+    private JTextField idField;
+    private JTextField nombreField;
+    private JTextField telefonoField;
+    private JTextField idBorrarField;
+
+    public Tarea3() {
+        setTitle("Gestión de Contactos");
+        setSize(500, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        textArea = new JTextArea();
+        textArea.setEditable(false);
+
+        JPanel panel = new JPanel(new GridLayout(10, 2));
+
+        panel.add(new JLabel("ID:"));
+        idField = new JTextField();
+        panel.add(idField);
+
+        panel.add(new JLabel("Nombre:"));
+        nombreField = new JTextField();
+        panel.add(nombreField);
+
+        panel.add(new JLabel("Teléfono:"));
+        telefonoField = new JTextField();
+        panel.add(telefonoField);
+
+        JButton crearButton = new JButton("Crear Contacto");
+        crearButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                crearContacto();
+            }
+        });
+        panel.add(crearButton);
+
+        JButton listarButton = new JButton("Listar Contactos");
+        listarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                listarContactos();
+            }
+        });
+        panel.add(listarButton);
+
+        panel.add(new JLabel("ID para Borrar:"));
+        idBorrarField = new JTextField();
+        panel.add(idBorrarField);
+
+        JButton borrarButton = new JButton("Borrar Contacto");
+        borrarButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                borrarContacto();
+            }
+        });
+        panel.add(borrarButton);
+
+        JButton cantidadButton = new JButton("Cantidad de Contactos");
+        cantidadButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mostrarCantidadContactos();
+            }
+        });
+        panel.add(cantidadButton);
+
+        add(panel, BorderLayout.NORTH);
+        add(new JScrollPane(textArea), BorderLayout.CENTER);
+    }
+
+    private void crearContacto() {
+        try {
+            int id = Integer.parseInt(idField.getText());
+            String nombre = nombreField.getText();
+            String telefono = telefonoField.getText();
+
+            Contacto nuevoContacto = new Contacto(id, nombre, telefono);
+
+            treeSet.add(nuevoContacto);
+            hashSet.add(nuevoContacto);
+            linkedHashSet.add(nuevoContacto);
+            arrayList.add(nuevoContacto);
+
+            textArea.setText("Contacto creado con éxito.");
+        } catch (NumberFormatException e) {
+            textArea.setText("Error: ID debe ser un número entero.");
         }
     }
 
-    public static void borrarContacto(Collection<Contacto> contactos, int id) {
+    private void listarContactos() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Contactos en TreeSet:\n");
+        treeSet.forEach(contacto -> sb.append(contacto).append("\n"));
+
+        sb.append("\nContactos en HashSet:\n");
+        hashSet.forEach(contacto -> sb.append(contacto).append("\n"));
+
+        sb.append("\nContactos en LinkedHashSet:\n");
+        linkedHashSet.forEach(contacto -> sb.append(contacto).append("\n"));
+
+        sb.append("\nContactos en ArrayList:\n");
+        arrayList.forEach(contacto -> sb.append(contacto).append("\n"));
+
+        textArea.setText(sb.toString());
+    }
+
+    private void borrarContacto() {
+        try {
+            int id = Integer.parseInt(idBorrarField.getText());
+
+            borrarContacto(treeSet, id);
+            borrarContacto(hashSet, id);
+            borrarContacto(linkedHashSet, id);
+            borrarContacto(arrayList, id);
+
+            textArea.setText("Contacto borrado.");
+        } catch (NumberFormatException e) {
+            textArea.setText("Error: ID debe ser un número entero.");
+        }
+    }
+
+    private void borrarContacto(Collection<Contacto> contactos, int id) {
         Iterator<Contacto> iterator = contactos.iterator();
         while (iterator.hasNext()) {
             Contacto contacto = iterator.next();
@@ -32,82 +140,23 @@ public class Tarea3 {
                 return;
             }
         }
-        System.out.println("No se encontró el contacto con ID " + id);
     }
 
-    public static void mostrarCantidadContactos(Set<Contacto> treeSet, Set<Contacto> hashSet, Set<Contacto> linkedHashSet, List<Contacto> arrayList) {
-        System.out.println("Cantidad de contactos en TreeSet: " + treeSet.size());
-        System.out.println("Cantidad de contactos en HashSet: " + hashSet.size());
-        System.out.println("Cantidad de contactos en LinkedHashSet: " + linkedHashSet.size());
-        System.out.println("Cantidad de contactos en ArrayList: " + arrayList.size());
+    private void mostrarCantidadContactos() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Cantidad de contactos en TreeSet: ").append(treeSet.size()).append("\n");
+        sb.append("Cantidad de contactos en HashSet: ").append(hashSet.size()).append("\n");
+        sb.append("Cantidad de contactos en LinkedHashSet: ").append(linkedHashSet.size()).append("\n");
+        sb.append("Cantidad de contactos en ArrayList: ").append(arrayList.size()).append("\n");
+
+        textArea.setText(sb.toString());
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        Set<Contacto> treeSet = new TreeSet<>(Comparator.comparingInt(Contacto::getId));
-        Set<Contacto> hashSet = new HashSet<>();
-        Set<Contacto> linkedHashSet = new LinkedHashSet<>();
-        List<Contacto> arrayList = new ArrayList<>();
-
-        while (true) {
-            System.out.println("Menú:");
-            System.out.println("1. Crear contacto");
-            System.out.println("2. Listar contactos");
-            System.out.println("3. Borrar contacto");
-            System.out.println("4. Cantidad de contactos en el directorio");
-            System.out.println("5. Salir");
-            System.out.print("Seleccione una opción: ");
-            int opcion = scanner.nextInt();
-
-            switch (opcion) {
-                case 1:
-                    System.out.print("Ingrese ID del contacto: ");
-                    int id = scanner.nextInt();
-                    scanner.nextLine(); // Limpiar el buffer
-                    System.out.print("Ingrese el nombre del contacto: ");
-                    String nombre = scanner.nextLine();
-                    System.out.print("Ingrese teléfono del contacto: ");
-                    String telefono = scanner.nextLine();
-
-                    Contacto nuevoContacto = new Contacto(id, nombre, telefono);
-
-                    treeSet.add(nuevoContacto);
-                    hashSet.add(nuevoContacto);
-                    linkedHashSet.add(nuevoContacto);
-                    arrayList.add(nuevoContacto);
-
-                    System.out.println("Contacto creado con éxito.");
-                    break;
-                case 2:
-                    System.out.println("Contactos en TreeSet:");
-                    listarContactos(treeSet);
-                    System.out.println("\nContactos en HashSet:");
-                    listarContactos(hashSet);
-                    System.out.println("\nContactos en LinkedHashSet:");
-                    listarContactos(linkedHashSet);
-                    System.out.println("\nContactos en ArrayList:");
-                    listarContactos(arrayList);
-                    break;
-                case 3:
-                    System.out.print("Ingrese ID del contacto a borrar: ");
-                    int idBorrar = scanner.nextInt();
-
-                    borrarContacto(treeSet, idBorrar);
-                    borrarContacto(hashSet, idBorrar);
-                    borrarContacto(linkedHashSet, idBorrar);
-                    borrarContacto(arrayList, idBorrar);
-
-                    System.out.println("Contacto borrado.");
-                    break;
-                case 4:
-                    mostrarCantidadContactos(treeSet, hashSet, linkedHashSet, arrayList);
-                    break;
-                case 5:
-                    System.out.println("Saliendo del programa...");
-                    System.exit(0);
-                default:
-                    System.out.println("Opción no válida.");
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new Tarea3().setVisible(true);
             }
-        }
+        });
     }
 }
