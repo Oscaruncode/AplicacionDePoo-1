@@ -116,31 +116,38 @@ public class Tarea3 extends JFrame {
         textArea.setText(sb.toString());
     }
 
-    private void borrarContacto() {
+  
+      private void borrarContacto() {
         try {
             int id = Integer.parseInt(idBorrarField.getText());
 
-            borrarContacto(treeSet, id);
-            borrarContacto(hashSet, id);
-            borrarContacto(linkedHashSet, id);
-            borrarContacto(arrayList, id);
+            boolean borrado = borrarContacto(treeSet, id);
+            borrado = borrarContacto(hashSet, id) || borrado;
+            borrado = borrarContacto(linkedHashSet, id) || borrado;
+            borrado = borrarContacto(arrayList, id) || borrado;
 
-            textArea.setText("Contacto borrado.");
+            if (borrado) {
+                textArea.setText("Contacto borrado.");
+            } else {
+                textArea.setText("No se encontró el contacto con ID " + id);
+            }
         } catch (NumberFormatException e) {
             textArea.setText("Error: ID debe ser un número entero.");
         }
     }
 
-    private void borrarContacto(Collection<Contacto> contactos, int id) {
+    private boolean borrarContacto(Collection<Contacto> contactos, int id) {
         Iterator<Contacto> iterator = contactos.iterator();
         while (iterator.hasNext()) {
             Contacto contacto = iterator.next();
             if (contacto.getId() == id) {
                 iterator.remove();
-                return;
+                return true;
             }
         }
+        return false;
     }
+    
 
     private void mostrarCantidadContactos() {
         StringBuilder sb = new StringBuilder();
